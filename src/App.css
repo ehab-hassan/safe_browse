@@ -317,7 +317,13 @@ body::after {
   margin-bottom: 1.75rem;
   animation: fadeUp 0.4s 0.1s ease both;
 }
-.logo-img { height: 32px; }
+.logo-img {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+}
 .logo-sub {
   font-family: 'DM Mono', monospace;
   font-size: 0.6rem; letter-spacing: 0.3em;
