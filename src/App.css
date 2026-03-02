@@ -188,6 +188,10 @@ body::after {
 }
 .url-input::placeholder { color: var(--text-dim); }
 
+.search-engine-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
 .search-engine-btn {
   display: flex; align-items: center; gap: 0.35rem;
   background: var(--surface2);
@@ -197,7 +201,6 @@ body::after {
   color: var(--text-sub);
   font-size: 0.7rem;
   cursor: pointer;
-  flex-shrink: 0;
   transition: background 0.2s, border-color 0.2s;
 }
 .search-engine-btn:hover {
@@ -208,6 +211,43 @@ body::after {
   content: '▾';
   font-size: 0.6rem;
   opacity: 0.8;
+}
+
+.search-engine-menu {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  padding: 0.2rem;
+  min-width: 7.5rem;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45);
+  z-index: 20;
+}
+.search-engine-option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0.35rem 0.5rem;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-dim);
+  font-size: 0.7rem;
+  font-family: 'DM Mono', monospace;
+  cursor: pointer;
+  border-radius: 6px;
+  text-align: left;
+}
+.search-engine-option:hover {
+  background: var(--surface3);
+  color: var(--text-sub);
+}
+.search-engine-option.active {
+  background: rgba(139, 92, 246, 0.18);
+  color: var(--text-main);
 }
 
 .go-btn {
@@ -318,7 +358,7 @@ body::after {
   animation: fadeUp 0.4s 0.1s ease both;
 }
 .logo-img {
-  height: 40px;
+  height: 30px;
   width: auto;
   object-fit: contain;
   display: block;

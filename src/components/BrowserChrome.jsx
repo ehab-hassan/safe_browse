@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import {
   IconBack,
   IconForward,
@@ -16,6 +16,13 @@ import {
   IconTrash,
 } from './NavIcons'
 
+const SEARCH_ENGINES = [
+  { id: 'google', label: 'Google', searchUrl: 'https://www.google.com/search?q=' },
+  { id: 'bing', label: 'Bing', searchUrl: 'https://www.bing.com/search?q=' },
+  { id: 'brave', label: 'Brave', searchUrl: 'https://search.brave.com/search?q=' },
+  { id: 'duckduckgo', label: 'DuckDuckGo', searchUrl: 'https://duckduckgo.com/?q=' },
+]
+
 export default function BrowserChrome({
   isExternal,
   url,
@@ -25,16 +32,46 @@ export default function BrowserChrome({
   onRefresh,
 }) {
   const urlInputRef = useRef(null)
+  const [activeEngineId, setActiveEngineId] = useState('google')
+  const [engineMenuOpen, setEngineMenuOpen] = useState(false)
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest('.search-engine-wrapper')) {
+        setEngineMenuOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  const resolveDestination = (value) => {
+    const trimmed = value.trim()
+    if (!trimmed) return ''
+
+    const hasSpace = /\s/.test(trimmed)
+    const looksLikeUrl =
+      /^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(trimmed) || (trimmed.includes('.') && !hasSpace)
+
+    if (looksLikeUrl) return trimmed
+
+    const engine = SEARCH_ENGINES.find((e) => e.id === activeEngineId) ?? SEARCH_ENGINES[0]
+    return engine.searchUrl + encodeURIComponent(trimmed)
+  }
 
   const handleGo = () => {
     const value = urlInputRef.current?.value?.trim()
-    if (value) onOpenLink(value)
+    if (!value) return
+    const destination = resolveDestination(value)
+    if (destination) onOpenLink(destination)
   }
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       const value = e.target.value?.trim()
-      if (value) onOpenLink(value)
+      if (!value) return
+      const destination = resolveDestination(value)
+      if (destination) onOpenLink(destination)
     }
   }
 
@@ -92,10 +129,37 @@ export default function BrowserChrome({
           onChange={(e) => onUrlChange(e.target.value)}
           onKeyDown={handleKeyDown}
         />
+        <div className="search-engine-wrapper">
+          <button
+            type="button"
+            className="search-engine-btn"
+            title="Search engine"
+            onClick={() => setEngineMenuOpen((open) => !open)}
+          >
+            {SEARCH_ENGINES.find((e) => e.id === activeEngineId)?.label ?? 'Google'}
+          </button>
+          {engineMenuOpen && (
+            <div className="search-engine-menu">
+              {SEARCH_ENGINES.map((engine) => (
+                <button
+                  key={engine.id}
+                  type="button"
+                  className={`search-engine-option ${
+                    engine.id === activeEngineId ? 'active' : ''
+                  }`}
+                  onClick={() => {
+                    setActiveEngineId(engine.id)
+                    setEngineMenuOpen(false)
+                    urlInputRef.current?.focus()
+                  }}
+                >
+                  {engine.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
-      <button type="button" className="search-engine-btn" title="Search engine">
-        Google
-      </button>
       <button type="button" className="go-btn" title="Go" onClick={handleGo}>
         <IconGo />
       </button>
