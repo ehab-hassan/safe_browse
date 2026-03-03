@@ -170,21 +170,23 @@ body::after {
 .search-engine-wrapper {
   position: relative;
   flex-shrink: 0;
+  border-left: 1px solid var(--border);
+  padding-left: 0.5rem;
+  margin-left: 0.25rem;
 }
 .search-engine-btn {
   display: flex; align-items: center; gap: 0.35rem;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 0.35rem 0.65rem;
+  background: transparent;
+  border: none;
+  padding: 0.3rem 0.5rem;
   color: var(--text-sub);
   font-size: 0.7rem;
   cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
+  transition: background 0.15s, color 0.15s;
 }
 .search-engine-btn:hover {
   background: var(--surface3);
-  border-color: var(--border2);
+  color: var(--text);
 }
 .search-engine-btn::after {
   content: '▾';
