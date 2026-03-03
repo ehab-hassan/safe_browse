@@ -61,3 +61,12 @@ export function IconSettings() {
 export function IconExit() {
   return <svg viewBox="0 0 24 24" style={iconStyle}><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
 }
+
+export function IconSearch() {
+  return (
+    <svg viewBox="0 0 24 24" style={iconStyle}>
+      <circle cx="11" cy="11" r="6" />
+      <line x1="16" y1="16" x2="21" y2="21" />
+    </svg>
+  )
+}

@@ -1,4 +1,5 @@
 import { useRef } from 'react'
+import { IconSearch } from './NavIcons'
 
 const QUICK_ITEMS = [
   { name: 'YouTube', url: 'https://youtube.com', letter: 'Y', bg: '#e52d27' },
@@ -34,12 +35,14 @@ export default function HomePage({ onOpenLink, searchInputRef }) {
     <div className="home-page">
       <div className="logo-area">
         <img className="logo-img" src="/images/logo.png" alt="Safe Browse" />
-        <div className="logo-sub">Encrypted Terminal</div>
+        <div className="logo-sub">Secure Workspace</div>
       </div>
 
       <div className="search-wrap">
         <div className="search-box">
-          <span className="search-icon">🔍</span>
+          <span className="search-icon">
+            <IconSearch />
+          </span>
           <input
             ref={searchInputRef}
             className="search-input"
