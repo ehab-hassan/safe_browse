@@ -155,7 +155,7 @@ body::after {
   transition: border-color 0.2s;
 }
 .url-bar:focus-within {
-  border-color: rgba(139,92,246,0.4);
+  border-color: rgba(131, 131, 131, 0.705);
 }
 .url-lock { color: var(--text-dim); font-size: 0.7rem; flex-shrink: 0; }
 .url-input {
@@ -227,7 +227,7 @@ body::after {
   color: var(--text-sub);
 }
 .search-engine-option.active {
-  background: rgba(139, 92, 246, 0.18);
+  background: rgb(144 246 92 / 18%);
   color: var(--text-main);
 }
 
