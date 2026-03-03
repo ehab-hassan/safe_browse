@@ -40,6 +40,24 @@ export function IconFullscreen() {
 export function IconDuplicate() {
   return <svg viewBox="0 0 24 24" style={iconStyle}><rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" /></svg>
 }
+export function IconPaste() {
+  return <svg viewBox="0 0 24 24" style={iconStyle}><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2" /><rect x="8" y="2" width="8" height="4" rx="1" ry="1" /></svg>
+}
 export function IconTrash() {
   return <svg viewBox="0 0 24 24" style={iconStyle}><polyline points="3 6 5 6 21 6" /><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" /><line x1="10" y1="11" x2="10" y2="17" /><line x1="14" y1="11" x2="14" y2="17" /></svg>
+}
+export function IconMenu() {
+  return (
+    <svg viewBox="0 0 24 24" style={iconStyle}>
+      <circle cx="12" cy="6" r="1.5" fill="currentColor" />
+      <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+      <circle cx="12" cy="18" r="1.5" fill="currentColor" />
+    </svg>
+  )
+}
+export function IconSettings() {
+  return <svg viewBox="0 0 24 24" style={iconStyle}><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009.19 18l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H13a1.65 1.65 0 001-1.51V7a2 2 0 012-2h.09A1.65 1.65 0 0018 4.61l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" /></svg>
+}
+export function IconExit() {
+  return <svg viewBox="0 0 24 24" style={iconStyle}><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" /><polyline points="16 17 21 12 16 7" /><line x1="21" y1="12" x2="9" y2="12" /></svg>
 }

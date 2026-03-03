@@ -114,7 +114,7 @@ export default function HomePage({ onOpenLink, searchInputRef }) {
         </div>
       </div>
 
-      <div className="section">
+      {/* <div className="section">
         <div className="section-head">
           <div className="section-label">Recent Activity</div>
           <a className="section-action danger" href="#">
@@ -142,7 +142,7 @@ export default function HomePage({ onOpenLink, searchInputRef }) {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
     </div>
   )
 }

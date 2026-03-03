@@ -3,24 +3,25 @@ import {
   IconBack,
   IconForward,
   IconRefresh,
-  IconHome,
   IconLock,
   IconGo,
+  IconMenu,
   IconBookmarks,
-  IconHistory,
   IconMute,
   IconZoomOut,
   IconZoomIn,
   IconFullscreen,
   IconDuplicate,
-  IconTrash,
+  IconPaste,
+  IconSettings,
+  IconExit,
 } from './NavIcons'
 
 const SEARCH_ENGINES = [
   { id: 'google', label: 'Google', searchUrl: 'https://www.google.com/search?q=' },
-  { id: 'bing', label: 'Bing', searchUrl: 'https://www.bing.com/search?q=' },
-  { id: 'brave', label: 'Brave', searchUrl: 'https://search.brave.com/search?q=' },
   { id: 'duckduckgo', label: 'DuckDuckGo', searchUrl: 'https://duckduckgo.com/?q=' },
+  { id: 'brave', label: 'Brave', searchUrl: 'https://search.brave.com/search?q=' },
+  { id: 'bing', label: 'Bing', searchUrl: 'https://www.bing.com/search?q=' },
 ]
 
 export default function BrowserChrome({
@@ -34,12 +35,15 @@ export default function BrowserChrome({
   const urlInputRef = useRef(null)
   const [activeEngineId, setActiveEngineId] = useState('google')
   const [engineMenuOpen, setEngineMenuOpen] = useState(false)
+  const [mainMenuOpen, setMainMenuOpen] = useState(false)
+  const [isIsolatedSession, setIsIsolatedSession] = useState(false)
+  const [zoom, setZoom] = useState(100)
+  const [muted, setMuted] = useState(false)
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (!event.target.closest('.search-engine-wrapper')) {
-        setEngineMenuOpen(false)
-      }
+      if (!event.target.closest('.search-engine-wrapper')) setEngineMenuOpen(false)
+      if (!event.target.closest('.nav-menu-wrapper')) setMainMenuOpen(false)
     }
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
@@ -48,13 +52,10 @@ export default function BrowserChrome({
   const resolveDestination = (value) => {
     const trimmed = value.trim()
     if (!trimmed) return ''
-
     const hasSpace = /\s/.test(trimmed)
     const looksLikeUrl =
       /^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(trimmed) || (trimmed.includes('.') && !hasSpace)
-
     if (looksLikeUrl) return trimmed
-
     const engine = SEARCH_ENGINES.find((e) => e.id === activeEngineId) ?? SEARCH_ENGINES[0]
     return engine.searchUrl + encodeURIComponent(trimmed)
   }
@@ -75,19 +76,14 @@ export default function BrowserChrome({
     }
   }
 
-  const handleRefresh = (e) => {
-    e.target.style.transform = 'rotate(360deg)'
-    e.target.style.transition = 'transform 0.4s ease'
-    setTimeout(() => {
-      e.target.style.transform = ''
-      e.target.style.transition = ''
-    }, 400)
-    onRefresh?.()
-  }
+  const sessionLabel = isIsolatedSession ? 'Isolated' : 'Trusted'
+  const sessionBadgeClass = isIsolatedSession
+    ? 'session-badge session-badge--isolated'
+    : 'session-badge session-badge--trusted'
 
   return (
     <div className="browser-chrome">
-      <div className="nav-btns">
+      <div className="nav-left">
         <button
           type="button"
           className={`nav-btn ${isExternal ? 'active' : ''}`}
@@ -102,96 +98,146 @@ export default function BrowserChrome({
         <button
           type="button"
           className="nav-btn"
-          onClick={handleRefresh}
+          onClick={() => onRefresh?.()}
           title="Refresh"
         >
           <IconRefresh />
         </button>
       </div>
-      <button
-        type="button"
-        className="home-btn"
-        onClick={onGoHome}
-        style={{ display: isExternal ? 'flex' : 'none' }}
-        title="Go Home"
-      >
-        <IconHome />
-        <span className="tooltip">Go Home</span>
-      </button>
-      <div className="url-bar">
-        <span className="url-lock"><IconLock /></span>
-        <input
-          ref={urlInputRef}
-          className="url-input"
-          type="text"
-          placeholder="about:blank"
-          value={url}
-          onChange={(e) => onUrlChange(e.target.value)}
-          onKeyDown={handleKeyDown}
-        />
-        <div className="search-engine-wrapper">
+
+      <div className="nav-center">
+        <div className="nav-center-inner">
+          <div className="url-bar">
+            <span className="url-lock"><IconLock /></span>
+            <input
+              ref={urlInputRef}
+              className="url-input"
+              type="text"
+              placeholder="about:blank"
+              value={url}
+              onChange={(e) => onUrlChange(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
+            <div className="search-engine-wrapper">
+              <button
+                type="button"
+                className="search-engine-btn"
+                title="Search engine"
+                onClick={() => setEngineMenuOpen((o) => !o)}
+              >
+                {SEARCH_ENGINES.find((e) => e.id === activeEngineId)?.label ?? 'Google'}
+              </button>
+              {engineMenuOpen && (
+                <div className="search-engine-menu">
+                  {SEARCH_ENGINES.map((engine) => (
+                    <button
+                      key={engine.id}
+                      type="button"
+                      className={`search-engine-option ${engine.id === activeEngineId ? 'active' : ''}`}
+                      onClick={() => {
+                        setActiveEngineId(engine.id)
+                        setEngineMenuOpen(false)
+                        urlInputRef.current?.focus()
+                      }}
+                    >
+                      {engine.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+          <button type="button" className="go-btn" title="Go" onClick={handleGo}>
+            <IconGo />
+          </button>
+          <button type="button" className="bookmark-btn" title="Bookmark this page">
+            <IconBookmarks />
+          </button>
+        </div>
+      </div>
+
+      <div className="nav-right">
+        <span className={sessionBadgeClass}>
+          <span className={`session-badge-dot ${isIsolatedSession ? 'session-badge-dot--isolated' : 'session-badge-dot--trusted'}`} aria-hidden />
+          {sessionLabel}
+        </span>
+        <div className="nav-menu-wrapper">
           <button
             type="button"
-            className="search-engine-btn"
-            title="Search engine"
-            onClick={() => setEngineMenuOpen((open) => !open)}
+            className="menu-btn"
+            onClick={() => setMainMenuOpen((o) => !o)}
+            title="Menu"
+            aria-expanded={mainMenuOpen}
           >
-            {SEARCH_ENGINES.find((e) => e.id === activeEngineId)?.label ?? 'Google'}
+            <IconMenu />
           </button>
-          {engineMenuOpen && (
-            <div className="search-engine-menu">
-              {SEARCH_ENGINES.map((engine) => (
-                <button
-                  key={engine.id}
-                  type="button"
-                  className={`search-engine-option ${
-                    engine.id === activeEngineId ? 'active' : ''
-                  }`}
-                  onClick={() => {
-                    setActiveEngineId(engine.id)
-                    setEngineMenuOpen(false)
-                    urlInputRef.current?.focus()
-                  }}
-                >
-                  {engine.label}
+          {mainMenuOpen && (
+            <div className="nav-menu-dropdown">
+              <div className="nav-menu-section">
+                <div className="nav-menu-section-label">Session</div>
+                <button type="button" className="nav-menu-item" onClick={() => { setIsIsolatedSession(false); setMainMenuOpen(false) }}>
+                  New Trusted Workspace
                 </button>
-              ))}
+                <button type="button" className="nav-menu-item" onClick={() => { setIsIsolatedSession(true); setMainMenuOpen(false) }}>
+                  New Isolated Session
+                </button>
+              </div>
+              <div className="nav-menu-sep" />
+              <div className="nav-menu-section">
+                <div className="nav-menu-section-label">Page Controls</div>
+                <button type="button" className="nav-menu-item">
+                  <IconBookmarks />
+                  <span>Bookmark this page</span>
+                </button>
+                <button type="button" className="nav-menu-item" onClick={() => setMuted((m) => !m)}>
+                  <IconMute />
+                  <span>Mute tab</span>
+                </button>
+              </div>
+              <div className="nav-menu-sep" />
+              <div className="nav-menu-section">
+                <div className="nav-menu-section-label">View Controls</div>
+                <div className="nav-menu-zoom">
+                  <button type="button" className="nav-menu-zoom-btn" onClick={() => setZoom((z) => Math.max(50, z - 10))} title="Zoom out">
+                    <IconZoomOut />
+                  </button>
+                  <span className="nav-menu-zoom-value">{zoom}%</span>
+                  <button type="button" className="nav-menu-zoom-btn" onClick={() => setZoom((z) => Math.min(150, z + 10))} title="Zoom in">
+                    <IconZoomIn />
+                  </button>
+                </div>
+                <button type="button" className="nav-menu-item">
+                  <IconFullscreen />
+                  <span>Fullscreen</span>
+                </button>
+              </div>
+              <div className="nav-menu-sep" />
+              <div className="nav-menu-section">
+                <div className="nav-menu-section-label">Edit</div>
+                <button type="button" className="nav-menu-item">
+                  <IconDuplicate />
+                  <span>Copy</span>
+                </button>
+                <button type="button" className="nav-menu-item" disabled={isIsolatedSession} title={isIsolatedSession ? 'Clipboard restricted to browser' : undefined}>
+                  <IconPaste />
+                  <span>Paste</span>
+                </button>
+              </div>
+              <div className="nav-menu-sep" />
+              <div className="nav-menu-section">
+                <div className="nav-menu-section-label">System</div>
+                <button type="button" className="nav-menu-item">
+                  <IconSettings />
+                  <span>Settings</span>
+                </button>
+                <button type="button" className="nav-menu-item">
+                  <IconExit />
+                  <span>Exit</span>
+                </button>
+              </div>
             </div>
           )}
         </div>
-      </div>
-      <button type="button" className="go-btn" title="Go" onClick={handleGo}>
-        <IconGo />
-      </button>
-      <div className="chrome-utils">
-        <button type="button" className="chrome-util-btn" title="Bookmarks">
-          <IconBookmarks />
-        </button>
-        <button type="button" className="chrome-util-btn" title="History">
-          <IconHistory />
-        </button>
-        <button type="button" className="chrome-util-btn" title="Mute">
-          <IconMute />
-        </button>
-        <div className="chrome-sep" />
-        <div className="chrome-zoom">
-          <button type="button" className="chrome-util-btn" title="Zoom out">
-            <IconZoomOut />
-          </button>
-          <span className="zoom-value">100%</span>
-          <button type="button" className="chrome-util-btn" title="Zoom in">
-            <IconZoomIn />
-          </button>
-        </div>
-        <button type="button" className="chrome-util-btn" title="Full screen">
-          <IconFullscreen />
-        </button>
-        <button type="button" className="chrome-util-btn" title="Copy from Browser">
-          <IconDuplicate />
-        </button>
-        <button type="button" className="chrome-util-btn" title="Paste to Browser">
-          <IconTrash />
-        </button>
       </div>
     </div>
   )
